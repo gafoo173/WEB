@@ -223,37 +223,139 @@
         .good { background: #ffeb3b; color: #333; }
         .fair { background: #ff9800; }
         .poor { background: #f44336; }
+        
+        .mode-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-color: transparent;
+            transform: scale(1.05);
+        }
+        
+        .expansion-result {
+            background: rgba(0, 255, 0, 0.2);
+            border: 3px solid rgba(0, 255, 0, 0.5);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .steps-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4ecdc4;
+        }
+        
+        .step {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #ff6b6b;
+        }
+        
+        .formula-display {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 20px;
+            color: #4ecdc4;
+            word-break: break-all;
+            margin: 15px 0;
+            border: 2px solid rgba(76, 220, 196, 0.3);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🧮 ضاغط الأرقام الذكي</h1>
         <p style="text-align: center; font-size: 18px; margin-bottom: 30px; color: #ddd;">
-            خوارزميات رياضية متقدمة لضغط الأرقام بأعلى دقة وأقصر صيغة ممكنة
+            خوارزميات رياضية متقدمة لضغط الأرقام وتوسيع الصيغ المضغوطة بأعلى دقة
         </p>
         
         <div class="input-section">
-            <div class="input-group">
-                <label for="numberInput">أدخل الرقم المراد ضغطه:</label>
-                <input 
-                    type="text" 
-                    id="numberInput" 
-                    placeholder="مثال: 643886284595838883468768738888684968490248573923874874846"
-                    autocomplete="off"
-                >
-                <small style="color: #ccc; margin-top: 10px; display: block;">
-                    يمكن إدخال أرقام بأي طول - حتى آلاف الخانات!
-                </small>
+            <!-- تبديل الأوضاع -->
+            <div class="mode-switcher" style="text-align: center; margin-bottom: 20px;">
+                <button id="compressMode" class="mode-btn active" onclick="switchMode('compress')">
+                    🗜️ ضغط الأرقام
+                </button>
+                <button id="expandMode" class="mode-btn" onclick="switchMode('expand')">
+                    📈 توسيع الصيغ المضغوطة
+                </button>
             </div>
-            
-            <div class="controls">
-                <button onclick="compressNumber()">🚀 تشغيل خوارزميات الضغط</button>
-                <button onclick="clearResults()">🗑️ مسح النتائج</button>
+
+            <!-- وضع الضغط -->
+            <div id="compressSection">
+                <div class="input-group">
+                    <label for="numberInput">أدخل الرقم المراد ضغطه:</label>
+                    <input 
+                        type="text" 
+                        id="numberInput" 
+                        placeholder="مثال: 643886284595838883468768738888684968490248573923874874846"
+                        autocomplete="off"
+                    >
+                    <small style="color: #ccc; margin-top: 10px; display: block;">
+                        يمكن إدخال أرقام بأي طول - حتى آلاف الخانات!
+                    </small>
+                </div>
                 
-                <div class="precision-control">
-                    <label>دقة الضغط:</label>
-                    <input type="range" id="precisionSlider" min="1" max="15" value="4">
-                    <span id="precisionValue">4</span>
+                <div class="controls">
+                    <button onclick="compressNumber()">🚀 تشغيل خوارزميات الضغط</button>
+                    <button onclick="clearResults()">🗑️ مسح النتائج</button>
+                    
+                    <div class="precision-control">
+                        <label>دقة الضغط:</label>
+                        <input type="range" id="precisionSlider" min="1" max="15" value="4">
+                        <span id="precisionValue">4</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- وضع التوسيع -->
+            <div id="expandSection" style="display: none;">
+                <div class="input-group">
+                    <label for="formulaInput">أدخل الصيغة المضغوطة:</label>
+                    <input 
+                        type="text" 
+                        id="formulaInput" 
+                        placeholder="مثال: 6.44e53 أو 2^10 أو √144 أو 0xFF أو [3;7;15;1]"
+                        autocomplete="off"
+                    >
+                    <small style="color: #ccc; margin-top: 10px; display: block;">
+                        يدعم: الترميز العلمي (e)، القوى (^)، الجذور (√)، الست عشر (0x)، الكسور المستمرة []، العوامل (×)
+                    </small>
+                </div>
+                
+                <div class="controls">
+                    <button onclick="expandFormula()">📈 توسيع الصيغة</button>
+                    <button onclick="clearResults()">🗑️ مسح النتائج</button>
+                    
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>
+                            <input type="checkbox" id="showSteps"> إظهار خطوات الحل
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -548,7 +650,396 @@
             }
         }
 
-        // وظائف الواجهة
+        // خوارزميات توسيع الصيغ المضغوطة
+        class FormulaExpander {
+            constructor(formula) {
+                this.formula = formula.toString().trim();
+                this.steps = [];
+                this.result = null;
+            }
+
+            // توسيع الترميز العلمي
+            expandScientific() {
+                // أنماط مختلفة للترميز العلمي
+                const patterns = [
+                    /^([+-]?\d*\.?\d+)[eE]([+-]?\d+)$/,  // 6.44e53
+                    /^([+-]?\d*\.?\d+)×10\^([+-]?\d+)$/,  // 6.44×10^53
+                    /^([+-]?\d*\.?\d+)\*10\^([+-]?\d+)$/,  // 6.44*10^53
+                    /^([+-]?\d*\.?\d+)×10\^?\(([+-]?\d+)\)$/  // 6.44×10^(53)
+                ];
+
+                for (let pattern of patterns) {
+                    const match = this.formula.match(pattern);
+                    if (match) {
+                        const mantissa = parseFloat(match[1]);
+                        const exponent = parseInt(match[2]);
+                        
+                        this.steps.push(`تحليل الصيغة: ${match[1]} × 10^${exponent}`);
+                        this.steps.push(`الأساس: ${mantissa}`);
+                        this.steps.push(`الأس: ${exponent}`);
+                        
+                        if (exponent >= 0 && exponent < 100) {
+                            // للأسس المعقولة، احسب الرقم الكامل
+                            let result = mantissa.toString();
+                            let decimalPos = result.indexOf('.');
+                            
+                            if (decimalPos === -1) {
+                                result += '.0';
+                                decimalPos = result.indexOf('.');
+                            }
+                            
+                            // إزالة النقطة العشرية
+                            result = result.replace('.', '');
+                            
+                            // إضافة أصفار أو تحريك النقطة
+                            if (exponent > result.length - 1) {
+                                result += '0'.repeat(exponent - (result.length - 1));
+                            }
+                            
+                            this.steps.push(`النتيجة: ${result}`);
+                            return result;
+                        } else {
+                            // للأسس الكبيرة جداً
+                            const magnitude = Math.pow(10, exponent);
+                            const result = mantissa * magnitude;
+                            this.steps.push(`النتيجة: ${result} (تقريبية)`);
+                            return result.toString();
+                        }
+                    }
+                }
+                return null;
+            }
+
+            // توسيع القوى البسيطة
+            expandPowers() {
+                const powerPattern = /^([+-]?\d*\.?\d+)\^([+-]?\d+)$/;
+                const match = this.formula.match(powerPattern);
+                
+                if (match) {
+                    const base = parseFloat(match[1]);
+                    const exponent = parseInt(match[2]);
+                    
+                    this.steps.push(`تحليل القوة: ${base}^${exponent}`);
+                    this.steps.push(`الأساس: ${base}`);
+                    this.steps.push(`الأس: ${exponent}`);
+                    
+                    if (Math.abs(exponent) <= 50) {
+                        const result = Math.pow(base, exponent);
+                        this.steps.push(`الحساب: ${base} مرفوع للقوة ${exponent}`);
+                        this.steps.push(`النتيجة: ${result}`);
+                        return result.toString();
+                    }
+                }
+                return null;
+            }
+
+            // توسيع الجذور
+            expandRoots() {
+                const sqrtPattern = /^√(\d+)$/;
+                const nthRootPattern = /^(\d+)√(\d+)$/;
+                
+                let match = this.formula.match(sqrtPattern);
+                if (match) {
+                    const number = parseInt(match[1]);
+                    const result = Math.sqrt(number);
+                    
+                    this.steps.push(`تحليل الجذر التربيعي: √${number}`);
+                    this.steps.push(`الحساب: الجذر التربيعي لـ ${number}`);
+                    this.steps.push(`النتيجة: ${result}`);
+                    
+                    return result.toString();
+                }
+                
+                match = this.formula.match(nthRootPattern);
+                if (match) {
+                    const root = parseInt(match[1]);
+                    const number = parseInt(match[2]);
+                    const result = Math.pow(number, 1/root);
+                    
+                    this.steps.push(`تحليل الجذر الـ${root}: ${root}√${number}`);
+                    this.steps.push(`الحساب: ${number}^(1/${root})`);
+                    this.steps.push(`النتيجة: ${result}`);
+                    
+                    return result.toString();
+                }
+                return null;
+            }
+
+            // توسيع الأنظمة المختلفة
+            expandDifferentBases() {
+                // نظام ستة عشر
+                const hexPattern = /^0x([0-9A-Fa-f]+)$/;
+                let match = this.formula.match(hexPattern);
+                if (match) {
+                    const hexValue = match[1];
+                    const result = parseInt(hexValue, 16);
+                    
+                    this.steps.push(`تحليل النظام الستة عشري: 0x${hexValue}`);
+                    this.steps.push(`تحويل من الأساس 16 إلى الأساس 10`);
+                    this.steps.push(`النتيجة: ${result}`);
+                    
+                    return result.toString();
+                }
+
+                // أنظمة أخرى
+                const basePattern = /^([0-9A-Za-z]+)₍(\d+)₎$/;
+                match = this.formula.match(basePattern);
+                if (match) {
+                    const value = match[1];
+                    const base = parseInt(match[2]);
+                    
+                    if (base >= 2 && base <= 36) {
+                        const result = parseInt(value, base);
+                        
+                        this.steps.push(`تحليل النظام ذو الأساس ${base}: ${value}₍${base}₎`);
+                        this.steps.push(`تحويل من الأساس ${base} إلى الأساس 10`);
+                        this.steps.push(`النتيجة: ${result}`);
+                        
+                        return result.toString();
+                    }
+                }
+                return null;
+            }
+
+            // توسيع الكسور المستمرة
+            expandContinuedFraction() {
+                const cfPattern = /^\[([0-9;,\s]+)\]$/;
+                const match = this.formula.match(cfPattern);
+                
+                if (match) {
+                    const terms = match[1].split(/[;,]/).map(t => parseInt(t.trim()));
+                    
+                    this.steps.push(`تحليل الكسر المستمر: [${terms.join(';')}]`);
+                    
+                    if (terms.length > 0) {
+                        let result = terms[terms.length - 1];
+                        
+                        for (let i = terms.length - 2; i >= 0; i--) {
+                            this.steps.push(`الخطوة ${terms.length - i}: ${terms[i]} + 1/(${result}) = ${terms[i] + 1/result}`);
+                            result = terms[i] + 1/result;
+                        }
+                        
+                        this.steps.push(`النتيجة النهائية: ${result}`);
+                        return result.toString();
+                    }
+                }
+                return null;
+            }
+
+            // توسيع العوامل
+            expandFactorization() {
+                // نمط مثل: 2^3×3^2×5
+                const factorPattern = /^(\d+(\^\d+)?)(×\d+(\^\d+)?)*$/;
+                
+                if (factorPattern.test(this.formula)) {
+                    const factors = this.formula.split('×');
+                    let result = 1;
+                    
+                    this.steps.push(`تحليل العوامل: ${this.formula}`);
+                    
+                    factors.forEach(factor => {
+                        const powerMatch = factor.match(/^(\d+)(\^(\d+))?$/);
+                        if (powerMatch) {
+                            const base = parseInt(powerMatch[1]);
+                            const exponent = powerMatch[3] ? parseInt(powerMatch[3]) : 1;
+                            const value = Math.pow(base, exponent);
+                            
+                            this.steps.push(`${base}^${exponent} = ${value}`);
+                            result *= value;
+                        }
+                    });
+                    
+                    this.steps.push(`النتيجة: ${result}`);
+                    return result.toString();
+                }
+                return null;
+            }
+
+            // التوسيع الرئيسي
+            expand() {
+                const methods = [
+                    () => this.expandScientific(),
+                    () => this.expandPowers(),
+                    () => this.expandRoots(),
+                    () => this.expandDifferentBases(),
+                    () => this.expandContinuedFraction(),
+                    () => this.expandFactorization()
+                ];
+
+                for (let method of methods) {
+                    try {
+                        const result = method();
+                        if (result !== null) {
+                            this.result = result;
+                            return { result: result, steps: this.steps };
+                        }
+                    } catch (error) {
+                        console.error('خطأ في التوسيع:', error);
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        // وظائف الواجهة الجديدة
+        function switchMode(mode) {
+            const compressBtn = document.getElementById('compressMode');
+            const expandBtn = document.getElementById('expandMode');
+            const compressSection = document.getElementById('compressSection');
+            const expandSection = document.getElementById('expandSection');
+            
+            if (mode === 'compress') {
+                compressBtn.classList.add('active');
+                expandBtn.classList.remove('active');
+                compressSection.style.display = 'block';
+                expandSection.style.display = 'none';
+            } else {
+                expandBtn.classList.add('active');
+                compressBtn.classList.remove('active');
+                compressSection.style.display = 'none';
+                expandSection.style.display = 'block';
+            }
+            
+            clearResults();
+        }
+
+        function expandFormula() {
+            const input = document.getElementById('formulaInput').value.trim();
+            const showSteps = document.getElementById('showSteps').checked;
+            
+            if (!input) {
+                alert('يرجى إدخال صيغة للتوسيع');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('results');
+            const loadingDiv = document.getElementById('loading');
+            const contentDiv = document.getElementById('resultsContent');
+            
+            resultsDiv.style.display = 'block';
+            loadingDiv.style.display = 'block';
+            loadingDiv.innerHTML = '🔄 جاري توسيع الصيغة الرياضية...';
+            contentDiv.innerHTML = '';
+
+            setTimeout(() => {
+                const expander = new FormulaExpander(input);
+                const result = expander.expand();
+                
+                loadingDiv.style.display = 'none';
+                displayExpansionResults(input, result, showSteps);
+            }, 1000);
+        }
+
+        function displayExpansionResults(originalFormula, expansionResult, showSteps) {
+            const contentDiv = document.getElementById('resultsContent');
+            
+            if (!expansionResult) {
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; color: #ff6b6b; font-size: 18px;">
+                        ❌ لم يتم التعرف على الصيغة المدخلة
+                        <div style="margin-top: 15px; font-size: 16px; color: #ccc;">
+                            الصيغ المدعومة:<br>
+                            • الترميز العلمي: 6.44e53, 6.44×10^53<br>
+                            • القوى: 2^10, 5^3<br>
+                            • الجذور: √144, 3√27<br>
+                            • الست عشر: 0xFF, 0x1A2B<br>
+                            • الكسور المستمرة: [3;7;15;1]<br>
+                            • العوامل: 2^3×3^2×5
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const { result, steps } = expansionResult;
+            
+            let html = `
+                <div class="expansion-result">
+                    <h3>✅ نتيجة التوسيع</h3>
+                    <div style="margin: 20px 0;">
+                        <div style="font-size: 18px; margin-bottom: 10px;">الصيغة المضغوطة:</div>
+                        <div class="formula-display">${originalFormula}</div>
+                    </div>
+                    <div style="margin: 20px 0;">
+                        <div style="font-size: 18px; margin-bottom: 10px;">الرقم الكامل:</div>
+                        <div class="formula-display" style="color: #00ff88; font-size: 24px;">${result}</div>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${originalFormula.length}</div>
+                        <div>أحرف الصيغة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${result.length}</div>
+                        <div>خانات النتيجة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${Math.round((result.length / originalFormula.length) * 100)}%</div>
+                        <div>نسبة التوسع</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${steps.length}</div>
+                        <div>خطوات الحل</div>
+                    </div>
+                </div>
+            `;
+
+            if (showSteps && steps.length > 0) {
+                html += `
+                    <div class="steps-section">
+                        <h4>📋 خطوات الحل التفصيلية</h4>
+                `;
+                
+                steps.forEach((step, index) => {
+                    html += `
+                        <div class="step">
+                            <strong>الخطوة ${index + 1}:</strong> ${step}
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+
+            html += `
+                <div class="algorithm-section">
+                    <h4>🔬 معلومات إضافية</h4>
+                    <p><strong>نوع الصيغة:</strong> ${getFormulaType(originalFormula)}</p>
+                    <p><strong>دقة التحويل:</strong> ${isExactConversion(originalFormula) ? 'دقيقة 100%' : 'تقريبية'}</p>
+                    <p><strong>طريقة الحساب:</strong> ${getCalculationMethod(originalFormula)}</p>
+                </div>
+            `;
+
+            contentDiv.innerHTML = html;
+        }
+
+        function getFormulaType(formula) {
+            if (/[eE]/.test(formula)) return 'ترميز علمي';
+            if (/\^/.test(formula)) return 'قوة رياضية';
+            if (/√/.test(formula)) return 'جذر رياضي';
+            if (/^0x/i.test(formula)) return 'نظام ستة عشر';
+            if (/\[.*\]/.test(formula)) return 'كسر مستمر';
+            if (/×/.test(formula)) return 'تحليل عوامل';
+            if (/₍\d+₎/.test(formula)) return 'نظام عد مختلف';
+            return 'صيغة مخصصة';
+        }
+
+        function isExactConversion(formula) {
+            return !/[eE]/.test(formula) || /^[+-]?\d+[eE][+-]?\d+$/.test(formula);
+        }
+
+        function getCalculationMethod(formula) {
+            if (/[eE]/.test(formula)) return 'ضرب في قوى العشرة';
+            if (/\^/.test(formula)) return 'رفع للقوة';
+            if (/√/.test(formula)) return 'استخراج الجذر';
+            if (/^0x/i.test(formula)) return 'تحويل من النظام الستة عشري';
+            if (/\[.*\]/.test(formula)) return 'تقييم الكسر المستمر';
+            if (/×/.test(formula)) return 'ضرب العوامل';
+            return 'حساب مباشر';
+        }
         function compressNumber() {
             const input = document.getElementById('numberInput').value.trim();
             const precision = document.getElementById('precisionSlider').value;
@@ -696,6 +1187,13 @@
         document.getElementById('numberInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 compressNumber();
+            }
+        });
+
+        // تشغيل التوسيع عند الضغط على Enter
+        document.getElementById('formulaInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                expandFormula();
             }
         });
     </script>
